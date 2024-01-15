@@ -9,13 +9,24 @@ let operacao = ""
 let contaMat
 let resultado
 
-document.getElementById('button-clear').addEventListener('click', () => { // limpa a tela ao apertar o "C"
-    display.innerHTML = ""
-    displayMenor.innerHTML = ""
-    operando1 = ""
-    operando2 = ""
-    operacao = ""
-})
+const buttonClear = document.getElementById('button-clear')
+if (buttonClear){
+    buttonClear.addEventListener('click', () => {
+        display.innerHTML = ""
+        displayMenor.innerHTML = ""
+        operando1 = ""
+        operando2 = ""
+        operacao = ""
+    })
+}
+
+// document.getElementById('button-clear').addEventListener('click', () => { // limpa a tela ao apertar o "C"
+//     display.innerHTML = ""
+//     displayMenor.innerHTML = ""
+//     operando1 = ""
+//     operando2 = ""
+//     operacao = ""
+// })
 
 let maximo = screen.width < 500 ? 12 : 17 // usado pra definir o tamanho maximo do visor de acordo com o tamanho da tela
 
@@ -45,27 +56,30 @@ operacaoBotao.forEach(item => {
     })
 })
 
-igual.addEventListener('click', () => {
-    if (operando1 === "" && operacao === "" && operando2 === ""){
-        display.innerHTML = "0"
-        displayMenor.innerHTML = ""
-    } else {
-        if(operacao === "" && operando2 === ""){
-            contaMat = operando1
-        } else if (operacao !== "" && operando2 === ""){
-            contaMat = operando1 + operacao + operando1
+if (igual){
+    igual.addEventListener('click', () => {
+        if (operando1 === "" && operacao === "" && operando2 === ""){
+            display.innerHTML = "0"
+            displayMenor.innerHTML = ""
         } else {
-            contaMat = operando1 + operacao + operando2
+            if(operacao === "" && operando2 === ""){
+                contaMat = operando1
+            } else if (operacao !== "" && operando2 === ""){
+                contaMat = operando1 + operacao + operando1
+            } else {
+                contaMat = operando1 + operacao + operando2
+            }
+            resultado = Function("return " + contaMat)();
+            displayMenor.innerHTML = ""
+            display.innerHTML = resultado
+            operando1 = "" // necessário para limpar a tela quando digitar de novo
+            operacao = ""
+            operando2 = ""
         }
-        resultado = Function("return " + contaMat)();
-        displayMenor.innerHTML = ""
-        display.innerHTML = resultado
-        operando1 = "" // necessário para limpar a tela quando digitar de novo
-        operacao = ""
-        operando2 = ""
-    }
+        
+    })
+}
     
-})
 
 document.addEventListener('keypress', (e) => { 
     const valorTecla = e.key // armazena o valor da tecla
@@ -101,15 +115,53 @@ document.addEventListener('keypress', (e) => {
             display.innerHTML = "0"
             
         } else {
-            
-            if(operacao === "" && operando2 === ""){
-                contaMat = operando1
-            } else if (operacao !== "" && operando2 === ""){
-                contaMat = operando1 + operacao + operando1
-            } else {
-                contaMat = operando1 + operacao + operando2
+
+            switch(operacao) {
+                case "+":
+                    if (operando2 === ""){
+                        contaMat = returnSoma(operando1,operando1)
+                    } else {
+                        contaMat = returnSoma(operando1,operando2)
+                    }
+                    break
+
+                case "-":
+                    if (operando2 === ""){
+                        contaMat = returnSubtracao(operando1,operando1)
+                    } else {
+                        contaMat = returnSubtracao(operando1,operando2)
+                    }
+                    break
+
+                case "*":
+                    if (operando2 === ""){
+                        contaMat = returnMultiplicacao(operando1,operando1)
+                    } else {
+                        contaMat = returnMultiplicacao(operando1,operando2)
+                    }
+                    break
+
+                case "/":
+                    if (operando2 === ""){
+                        contaMat = returnDivisao(operando1,operando1)
+                    } else {
+                        contaMat = returnDivisao(operando1,operando2)
+                    }
+                    break
+
+                default:
+                    contaMat = operando1;
             }
-            resultado = Function("return " + contaMat)(); // calcula o valor da string sem usar eval
+
+            // if(operacao === "" && operando2 === ""){
+            //     contaMat = operando1
+            // } else if (operacao !== "" && operando2 === ""){
+            //     contaMat = operando1 + operacao + operando1
+            // } else {
+            //     contaMat = operando1 + operacao + operando2
+            // }
+            // resultado = Function("return " + contaMat)(); // calcula o valor da string sem usar eval
+            resultado = contaMat
             display.innerHTML = resultado
             displayMenor.innerHTML = ""
             operando1 = "" // necessário para limpar a tela quando digitar de novo
@@ -133,3 +185,31 @@ function atribuirNumero(numero) {
         display.innerHTML += numero.replace(/ /g, "")
     }
 }
+
+function returnSoma (num1, num2) {
+    return parseFloat(num1) + parseFloat(num2);
+}
+function returnSubtracao (num1, num2) {
+    return parseFloat(num1) - parseFloat(num2);
+}
+function returnMultiplicacao (num1, num2) {
+    return parseFloat(num1) * parseFloat(num2);
+}
+function returnDivisao (num1, num2) {
+    return parseFloat(num1) / parseFloat(num2);
+}
+
+module.exports = {
+    returnSoma,
+    returnSubtracao,
+    returnMultiplicacao,
+    returnDivisao
+}
+
+// if(operacao === "" && operando2 === ""){
+//     contaMat = operando1
+// } else if (operacao !== "" && operando2 === ""){
+//     contaMat = operando1 + operacao + operando1
+// } else {
+//     contaMat = operando1 + operacao + operando2
+// }
